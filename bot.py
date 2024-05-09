@@ -1,16 +1,13 @@
 
 import os
-from selenium.webdriver.chrome.options import Options
-from selenium import webdriver
 import asyncio
-import urllib.request
-import re
 import discord
-import youtube_dl
 import time
 from discord.ext import commands
+from youtubesearchpython import VideosSearch
+import os
 
-prifix = ";"
+prifix = os.getenv('PREFIX') or '-'
 
 # Suppress noise about console usage from errors
 youtube_dl.utils.bug_reports_message = lambda: ''
@@ -31,32 +28,13 @@ ytdl_format_options = {
     'source_address': '0.0.0.0'
 }
 
-chrome_options = Options()
-
-chrome_options.add_argument("--window-size=1920x1080")
-chrome_options.add_argument('--lang=en_US')
-chrome_options.add_argument("--disable-gpu")
-chrome_options.headless = True
-chrome_options.add_argument(
-    "--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36")
-
-chrome_options.add_argument('--disable-gpu')
-chrome_options.add_argument('--no-sandbox')
-chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
-def get_source(query):
-    driver = webdriver.Chrome(
-        executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=chrome_options)
-    driver.get(f"https://music.youtube.com/search?q={query}")
-    time.sleep(3)
-
-    return driver.page_source
  
    
 def search_youtube(query):
-    query = query.replace(' ', '+')
+    videosSearch = VideosSearch(query, limit = 2)
+    search_results = videosSearch.result()
+    video_ids = [video['id'] for video in search_results['result']]
 
-    html = get_source(query)
-    video_ids = re.findall(r"watch\?v=(\S{11})", html)
     if(len(video_ids) == 0):
         return None
     url = f"https://music.youtube.com/watch?v={video_ids[0]}"
@@ -192,7 +170,7 @@ class Music(commands.Cog):
 
 
 bot = commands.Bot(command_prefix=commands.when_mentioned_or(prifix),
-                   description='CSI DYPIEMR')
+                   description='LoFi Lily')
 
 
 @bot.event
