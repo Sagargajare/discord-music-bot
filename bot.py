@@ -4,9 +4,12 @@ import asyncio
 import discord
 import time
 from discord.ext import commands
+import youtube_dl
 from youtubesearchpython import VideosSearch
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 prifix = os.getenv('PREFIX') or '-'
 
 # Suppress noise about console usage from errors
